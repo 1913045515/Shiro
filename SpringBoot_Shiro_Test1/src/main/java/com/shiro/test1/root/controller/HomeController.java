@@ -30,6 +30,11 @@ public class HomeController {
 
     @RequestMapping({"/", "/index"})
     public String index() {
+//        UsernamePasswordToken usernamePasswordToken=new UsernamePasswordToken("admin","123456",true);
+        Subject subject = SecurityUtils.getSubject();
+//        subject.login(usernamePasswordToken);
+        System.out.println("value1:"+subject.isRemembered());
+        System.out.println("value2:"+subject.isAuthenticated());
         return "/index";
     }
 
@@ -71,6 +76,9 @@ public class HomeController {
 
     @RequestMapping(value = "/out", method = RequestMethod.GET)
     public String out() {
+        Subject subject = SecurityUtils.getSubject();
+        System.out.println("value1:"+subject.isRemembered());
+        System.out.println("value2:"+subject.isAuthenticated());
         return "out";
     }
 
@@ -133,10 +141,7 @@ public class HomeController {
 
     // 登录提交地址和applicationontext-shiro.xml配置的loginurl一致。 (配置文件方式的说法)
     @RequestMapping(value = "/login", method = RequestMethod.POST)
-    public String login(HttpServletRequest request, Map<String, Object> map) throws Exception {
-        System.out.println("HomeController.login()");
-        // 登录失败从request中获取shiro处理的异常信息。
-        // shiroLoginFailure:就是shiro异常类的全类名.
+    public String login(HttpServletRequest request,Map<String, Object> map) throws Exception {
         String exception = (String) request.getAttribute("shiroLoginFailure");
         System.out.println("exception=" + exception);
         String msg = "";
@@ -155,6 +160,12 @@ public class HomeController {
                 System.out.println("else -- >" + exception);
             }
         }
+        Subject subject = SecurityUtils.getSubject();
+
+//        UsernamePasswordToken usernamePasswordToken= ((UsernamePasswordToken)subject.isRemembered());
+//        System.out.println(usernamePasswordToken.isRememberMe());
+//        usernamePasswordToken.setRememberMe(true);
+        System.out.println(subject.isRemembered());
         map.put("msg", msg);
         // 此方法不处理登录成功,由shiro进行处理.
         return "index";

@@ -34,7 +34,7 @@ public class MyShiroRealm extends AuthorizingRealm{
 	private UserInfoService userInfoService;
 	
 	/**
-	 * 认证信息.(身份验证) 
+	 * 认证信息.(身份验证)
 	 * :
 	 * Authentication 是用来验证用户身份
 	 * @param token
@@ -44,17 +44,17 @@ public class MyShiroRealm extends AuthorizingRealm{
 	@Override
 	protected AuthenticationInfo doGetAuthenticationInfo(AuthenticationToken token) throws AuthenticationException {
 		System.out.println("MyShiroRealm.doGetAuthenticationInfo()");
-//		Subject subject = SecurityUtils.getSubject();
-//		UsernamePasswordToken token22 = new UsernamePasswordToken("zhang", "123");
-//		subject.login(token22);
 		//获取基于用户名和密码的令牌
 		//获取用户的输入的账号.
-		String username = (String)token.getPrincipal();
+		UsernamePasswordToken usernamePasswordToken=(UsernamePasswordToken)token;
+		usernamePasswordToken.setRememberMe(true);
+		String username = (String)usernamePasswordToken.getPrincipal();
 //		System.out.println(token.getCredentials());
 //		System.out.println("username:"+username);
 		//通过username从数据库中查找 User对象，如果找到，没找到.
 		//实际项目中，这里可以根据实际情况做缓存，如果不做，Shiro自己也是有时间间隔机制，2分钟内不会重复执行该方法
 		UserInfo userInfo = userInfoService.findByUsername(username);
+		System.out.println("username:"+username);
 		if(userInfo == null){
 			return null;
 		}
@@ -64,10 +64,10 @@ public class MyShiroRealm extends AuthorizingRealm{
 		 * 获取之后可以在前端for循环显示所有链接;
 		 */
 		//userInfo.setPermissions(userService.findPermissions(user));
-		
-		
+
+
 		//账号判断;
-		
+
 		//加密方式;
 		//交给AuthenticatingRealm使用CredentialsMatcher进行密码匹配，如果觉得人家的不好可以自定义实现
 		SimpleAuthenticationInfo authenticationInfo = new SimpleAuthenticationInfo(
@@ -76,7 +76,6 @@ public class MyShiroRealm extends AuthorizingRealm{
                 ByteSource.Util.bytes(userInfo.getCredentialsSalt()),//salt=username+salt
                 getName()  //realm name
         );
-		
 	    //明文: 若存在，将此用户存放到登录认证info中，无需自己做密码对比，Shiro会为我们进行密码对比校验
 //      SimpleAuthenticationInfo authenticationInfo = new SimpleAuthenticationInfo(
 //    		  userInfo, //用户名
@@ -84,6 +83,7 @@ public class MyShiroRealm extends AuthorizingRealm{
 //             getName()  //realm name
 //      );
 		return authenticationInfo;
+//		return null;
 	}
 	
 	
@@ -171,5 +171,4 @@ public class MyShiroRealm extends AuthorizingRealm{
 		 }
 	     return stringPermissions;
 	}
-	
 }

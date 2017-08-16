@@ -19,9 +19,9 @@ import java.util.LinkedList;
 
 public class KickoutSessionControlFilter extends AccessControlFilter {
 
-    private String kickoutUrl="out"; //踢出后到的地址
+    private String kickoutUrl="login"; //踢出后到的地址
     private boolean kickoutAfter = false; //踢出之前登录的/之后登录的用户 默认踢出之前登录的用户
-    private int maxSession = 3;//同一个帐号最大会话数 默认1
+    private int maxSession = 10;//同一个帐号最大会话数 默认1
 
     private SessionManager sessionManager;
 

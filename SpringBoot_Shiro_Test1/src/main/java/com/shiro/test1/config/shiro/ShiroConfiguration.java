@@ -28,6 +28,9 @@ import org.apache.shiro.web.session.mgt.ServletContainerSessionManager;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.apache.shiro.cache.ehcache.EhCacheManager;
+
+import javax.servlet.Filter;
+
 /**
  * Shiro 配置
  * 
@@ -37,7 +40,7 @@ Apache Shiro 核心通过 Filter 来实现，就好像SpringMvc 通过DispachSer
  * @author Angel(QQ:412887952)
  * @version v.0.1
  */
-//@Configuration
+@Configuration
 public class ShiroConfiguration {
 		
 	
@@ -59,20 +62,24 @@ public class ShiroConfiguration {
 		 // 必须设置 SecurityManager  
 		shiroFilterFactoryBean.setSecurityManager(securityManager);
 		Map map=new HashedMap();
+//		Map<String, Filter> filters = shiroFilterFactoryBean.getFilters();//获取filters
+//		filters.put("authc",formAuthenticationFilter());//将自定义 的FormAuthenticationFilter注入shiroFilter中
+//		filters.put("kickout",getKickoutSessionControlFilter());
 		map.put("kickout",getKickoutSessionControlFilter());
-		map.put("user",formAuthenticationFilter());
+//		map.put("user",formAuthenticationFilter());
 		shiroFilterFactoryBean.setFilters(map);
-		
-		
 		//拦截器.
 		Map<String,String> filterChainDefinitionMap = new LinkedHashMap<String,String>();
 
 		//配置退出 过滤器,其中的具体的退出代码Shiro已经替我们实现了
+
 		filterChainDefinitionMap.put("/logout", "logout");
 		
 		//<!-- 过滤链定义，从上向下顺序执行，一般将 /**放在最为下边 -->:这是一个坑呢，一不小心代码就不好使了;
 	    //<!-- authc:所有url都必须认证通过才可以访问; anon:所有url都都可以匿名访问-->
-		filterChainDefinitionMap.put("/index", "user");
+//		filterChainDefinitionMap.put("/index", "kickout,authc");
+		filterChainDefinitionMap.put("/out", "user");
+		filterChainDefinitionMap.put("/index", "anon");
 		filterChainDefinitionMap.put("/**", "kickout,authc");
 		// 如果不设置默认会自动寻找Web工程根目录下的"/login.jsp"页面
         shiroFilterFactoryBean.setLoginUrl("/login");
@@ -96,11 +103,13 @@ public class ShiroConfiguration {
 //		DefaultWebSecurityManager securityManager =  new DefaultWebSecurityManager();
 //		securityManager = factory.getInstance();
 		DefaultWebSecurityManager securityManager =  new DefaultWebSecurityManager();
-		//设置realm
-		securityManager.setRealm(myShiroRealm());
+
 		securityManager.setRememberMeManager(rememberMeManager());
 //		SessionManager sessionManager=new ServletContainerSessionManager();
 		securityManager.setSessionManager(sessionManager());
+
+		//设置realm
+		securityManager.setRealm(myShiroRealm());
 		return securityManager;
 	}
 
@@ -112,7 +121,7 @@ public class ShiroConfiguration {
 	@Bean
 	public MyShiroRealm myShiroRealm(){
 		MyShiroRealm myShiroRealm = new MyShiroRealm();
-		myShiroRealm.setCredentialsMatcher(hashedCredentialsMatcher());;
+		myShiroRealm.setCredentialsMatcher(hashedCredentialsMatcher());
 		return myShiroRealm;
 	}
 
@@ -162,25 +171,27 @@ public class ShiroConfiguration {
 	public RememberMeManager rememberMeManager() {
 		CookieRememberMeManager cookieRememberMeManager=new CookieRememberMeManager();
 		SimpleCookie simpleCookie=new SimpleCookie();
+		simpleCookie.setName("rememberMe");
 		simpleCookie.setHttpOnly(true);
 		simpleCookie.setMaxAge(2592000);
-		simpleCookie.setName("test1");
-		cookieRememberMeManager.setEncryptionCipherKey(Base64.decode("4AvVhmFLUs0KTA3Kprsdag=="));
+		byte[] cipherKey = Base64.decode("4AvVhmFLUs0KTA3Kprsdag==");
+		cookieRememberMeManager.setCipherKey(cipherKey);
 		cookieRememberMeManager.setCookie(simpleCookie);
 		return cookieRememberMeManager;
 	}
 
-	/**
-	 * 用来开启记录密码
-	 * @return
-	 */
-	@Bean
-	public FormAuthenticationFilter formAuthenticationFilter(){
-		FormAuthenticationFilter formAuthenticationFilter =new FormAuthenticationFilter();
-		formAuthenticationFilter.setRememberMeParam("rememberMe");
-//		formAuthenticationFilter.setRememberMeParam("true");
-		return formAuthenticationFilter;
-	}
+//	/**
+//	 * 用来开启记录密码
+//	 * @return
+//	 */
+//	@Bean
+//	public FormAuthenticationFilter formAuthenticationFilter(){
+//		FormAuthenticationFilter formAuthenticationFilter =new FormAuthenticationFilter();
+//		formAuthenticationFilter.setRememberMeParam("rememberMe");
+////		formAuthenticationFilter.setEnabled(true);
+////		formAuthenticationFilter.setRememberMeParam("rememberMe");
+//		return formAuthenticationFilter;
+//	}
 	/**
 	 * 凭证匹配器
 	 * （由于我们的密码校验交给Shiro的SimpleAuthenticationInfo进行处理了
