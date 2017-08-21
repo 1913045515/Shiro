@@ -1,5 +1,6 @@
 package com.shiro.test1.root.controller;
 import com.shiro.test1.config.shiro.MyShiroRealm;
+import com.shiro.test1.config.shiro.ShiroConfiguration;
 import com.shiro.test1.core.service.UserInfoService;
 import org.apache.commons.collections.map.HashedMap;
 import org.apache.shiro.SecurityUtils;
@@ -161,13 +162,13 @@ public class HomeController {
             }
         }
         Subject subject = SecurityUtils.getSubject();
-
 //        UsernamePasswordToken usernamePasswordToken= ((UsernamePasswordToken)subject.isRemembered());
 //        System.out.println(usernamePasswordToken.isRememberMe());
 //        usernamePasswordToken.setRememberMe(true);
         System.out.println(subject.isRemembered());
         map.put("msg", msg);
+        return "redirect:" + ShiroConfiguration.loginUrl;
         // 此方法不处理登录成功,由shiro进行处理.
-        return "index";
+//        return "index";
     }
 }

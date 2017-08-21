@@ -1,22 +1,19 @@
 package com.shiro.test1.config.shiro;
-
+import com.shiro.test1.config.shiro.ShiroConfiguration;
 import com.shiro.test1.core.bean.SysPermission;
-import com.shiro.test1.core.bean.SysRole;
 import com.shiro.test1.core.bean.UserInfo;
 import com.shiro.test1.core.service.UserInfoService;
-import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authc.*;
 import org.apache.shiro.authz.AuthorizationInfo;
 import org.apache.shiro.authz.SimpleAuthorizationInfo;
+import org.apache.shiro.cas.CasRealm;
 import org.apache.shiro.realm.AuthorizingRealm;
 import org.apache.shiro.subject.PrincipalCollection;
-import org.apache.shiro.subject.Subject;
 import org.apache.shiro.util.ByteSource;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 /**
@@ -25,14 +22,15 @@ import java.util.Set;
  * @author Angel(QQ:412887952)
  * @version v.0.1
  */
-public class MyShiroRealm extends AuthorizingRealm {
-//	@Override
-//	public boolean supports(AuthenticationToken token) {
-////		return super.supports(token);
-//		////仅支持UsernamePasswordToken 类型的Token
-//		return token instanceof UsernamePasswordToken;
-//	}
+public class MyShiroCasRealm extends CasRealm {
 
+    @PostConstruct
+    public void initProperty(){
+//      setDefaultRoles("ROLE_USER");
+        setCasServerUrlPrefix(ShiroConfiguration.casServerUrlPrefix);
+        // 客户端回调地址
+        setCasService(ShiroConfiguration.shiroServerUrlPrefix + ShiroConfiguration.casFilterUrlPattern);
+    }
     @Resource
     private UserInfoService userInfoService;
 
