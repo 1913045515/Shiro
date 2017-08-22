@@ -45,20 +45,20 @@ import javax.servlet.Filter;
  * @author Angel(QQ:412887952)
  * @version v.0.1
  */
-@Configuration
+//@Configuration
 public class ShiroConfiguration {
-    // CasServerUrlPrefix
-    public static final String casServerUrlPrefix = "https://localhost:8443/cas";
-    // Cas登录页面地址
-    public static final String casLoginUrl = casServerUrlPrefix + "/login";
-    // Cas登出页面地址
-    public static final String casLogoutUrl = casServerUrlPrefix + "/logout";
-    // 当前工程对外提供的服务地址
-    public static final String shiroServerUrlPrefix = "http://localhost:9090/myspringboot";
-    // casFilter UrlPattern
-    public static final String casFilterUrlPattern = "/shiro-cas";
-    // 登录地
-    public static final String loginUrl = casLoginUrl + "?service=" + shiroServerUrlPrefix + casFilterUrlPattern;
+//    // CasServerUrlPrefix
+//    public static final String casServerUrlPrefix = "https://localhost:8080";
+//    // Cas登录页面地址
+//    public static final String casLoginUrl = casServerUrlPrefix + "/login";
+//    // Cas登出页面地址
+//    public static final String casLogoutUrl = casServerUrlPrefix + "/logout";
+//    // 当前工程对外提供的服务地址
+//    public static final String shiroServerUrlPrefix = "http://localhost:9090/myspringboot";
+//    // casFilter UrlPattern
+//    public static final String casFilterUrlPattern = "/shiro-cas";
+//    // 登录地
+//    public static final String loginUrl = casLoginUrl + "?service=" + shiroServerUrlPrefix + casFilterUrlPattern;
 
     /**
      * ShiroFilterFactoryBean 处理拦截资源文件问题。
@@ -81,7 +81,7 @@ public class ShiroConfiguration {
 //		filters.put("authc",formAuthenticationFilter());//将自定义 的FormAuthenticationFilter注入shiroFilter中
 //		filters.put("kickout",getKickoutSessionControlFilter());
         map.put("kickout", getKickoutSessionControlFilter());
-        map.put("casFilter",getCasFilter());
+//        map.put("casFilter",getCasFilter());
 //		map.put("user",formAuthenticationFilter());
         shiroFilterFactoryBean.setFilters(map);
         //拦截器.
@@ -103,73 +103,73 @@ public class ShiroConfiguration {
         shiroFilterFactoryBean.setSuccessUrl("/index");
         //未授权界面;
         shiroFilterFactoryBean.setUnauthorizedUrl("/403");
-        filterChainDefinitionMap.put(casFilterUrlPattern, "casFilter");// shiro集成cas后，首先添加该规则
+//        filterChainDefinitionMap.put(casFilterUrlPattern, "casFilter");// shiro集成cas后，首先添加该规则
         shiroFilterFactoryBean.setFilterChainDefinitionMap(filterChainDefinitionMap);
         return shiroFilterFactoryBean;
     }
 
-    @Bean(name = "myShiroCasRealm")
-    public MyShiroCasRealm myShiroCasRealm() {//EhCacheManager cacheManager
-        MyShiroCasRealm realm = new MyShiroCasRealm();
-//        realm.setCacheManager(cacheManager);
-        realm.setCredentialsMatcher(hashedCredentialsMatcher());
-        return realm;
-    }
+//    @Bean(name = "myShiroCasRealm")
+//    public MyShiroCasRealm myShiroCasRealm() {//EhCacheManager cacheManager
+//        MyShiroCasRealm realm = new MyShiroCasRealm();
+////        realm.setCacheManager(cacheManager);
+//        realm.setCredentialsMatcher(hashedCredentialsMatcher());
+//        return realm;
+//    }
+//
+//    /**
+//     * 注册DelegatingFilterProxy（Shiro）
+//     *
+//     * @return
+//     * @author SHANHY
+//     * @create  2016年1月13日
+//     */
+//    @Bean
+//    public FilterRegistrationBean filterRegistrationBean() {
+//        FilterRegistrationBean filterRegistration = new FilterRegistrationBean();
+//        filterRegistration.setFilter(new DelegatingFilterProxy("shiroFilter"));
+//        //  该值缺省为false,表示生命周期由SpringApplicationContext管理,设置为true则表示由ServletContainer管理
+//        filterRegistration.addInitParameter("targetFilterLifecycle", "true");
+//        filterRegistration.setEnabled(true);
+//        filterRegistration.addUrlPatterns("/*");
+//        return filterRegistration;
+//    }
+//
+//    @Bean(name = "lifecycleBeanPostProcessor")
+//    public LifecycleBeanPostProcessor getLifecycleBeanPostProcessor() {
+//        return new LifecycleBeanPostProcessor();
+//    }
+//
+//    @Bean
+//    public DefaultAdvisorAutoProxyCreator getDefaultAdvisorAutoProxyCreator() {
+//        DefaultAdvisorAutoProxyCreator daap = new DefaultAdvisorAutoProxyCreator();
+//        daap.setProxyTargetClass(true);
+//        return daap;
+//    }
+//
+//    @Bean
+//    public AuthorizationAttributeSourceAdvisor getAuthorizationAttributeSourceAdvisor(SecurityManager securityManager) {
+//        AuthorizationAttributeSourceAdvisor aasa = new AuthorizationAttributeSourceAdvisor();
+//        aasa.setSecurityManager(securityManager);
+//        return aasa;
+//    }
 
-    /**
-     * 注册DelegatingFilterProxy（Shiro）
-     *
-     * @return
-     * @author SHANHY
-     * @create  2016年1月13日
-     */
-    @Bean
-    public FilterRegistrationBean filterRegistrationBean() {
-        FilterRegistrationBean filterRegistration = new FilterRegistrationBean();
-        filterRegistration.setFilter(new DelegatingFilterProxy("shiroFilter"));
-        //  该值缺省为false,表示生命周期由SpringApplicationContext管理,设置为true则表示由ServletContainer管理
-        filterRegistration.addInitParameter("targetFilterLifecycle", "true");
-        filterRegistration.setEnabled(true);
-        filterRegistration.addUrlPatterns("/*");
-        return filterRegistration;
-    }
-
-    @Bean(name = "lifecycleBeanPostProcessor")
-    public LifecycleBeanPostProcessor getLifecycleBeanPostProcessor() {
-        return new LifecycleBeanPostProcessor();
-    }
-
-    @Bean
-    public DefaultAdvisorAutoProxyCreator getDefaultAdvisorAutoProxyCreator() {
-        DefaultAdvisorAutoProxyCreator daap = new DefaultAdvisorAutoProxyCreator();
-        daap.setProxyTargetClass(true);
-        return daap;
-    }
-
-    @Bean
-    public AuthorizationAttributeSourceAdvisor getAuthorizationAttributeSourceAdvisor(SecurityManager securityManager) {
-        AuthorizationAttributeSourceAdvisor aasa = new AuthorizationAttributeSourceAdvisor();
-        aasa.setSecurityManager(securityManager);
-        return aasa;
-    }
-
-    /**
-     * CAS过滤器
-     *
-     * @return
-     * @author SHANHY
-     * @create  2016年1月17日
-     */
-    @Bean(name = "casFilter")
-    public CasFilter getCasFilter() {
-        CasFilter casFilter = new CasFilter();
-        casFilter.setName("casFilter");
-        casFilter.setEnabled(true);
-        // 登录失败后跳转的URL，也就是 Shiro 执行 CasRealm 的 doGetAuthenticationInfo 方法向CasServer验证tiket
-        casFilter.setFailureUrl(loginUrl);// 我们选择认证失败后再打开登录页面
-        return casFilter;
-    }
-
+//    /**
+//     * CAS过滤器
+//     *
+//     * @return
+//     * @author SHANHY
+//     * @create  2016年1月17日
+//     */
+//    @Bean(name = "casFilter")
+//    public CasFilter getCasFilter() {
+//        CasFilter casFilter = new CasFilter();
+//        casFilter.setName("casFilter");
+//        casFilter.setEnabled(true);
+//        // 登录失败后跳转的URL，也就是 Shiro 执行 CasRealm 的 doGetAuthenticationInfo 方法向CasServer验证tiket
+//        casFilter.setFailureUrl(loginUrl);// 我们选择认证失败后再打开登录页面
+//        return casFilter;
+//    }
+//
 
     @Bean
     public SecurityManager securityManager() {
@@ -188,8 +188,8 @@ public class ShiroConfiguration {
         securityManager.setSessionManager(sessionManager());
 
         //设置realm
-//        securityManager.setRealm(myShiroRealm());
-        securityManager.setRealm(myShiroCasRealm());
+        securityManager.setRealm(myShiroRealm());
+//        securityManager.setRealm(myShiroCasRealm());
         return securityManager;
     }
 
